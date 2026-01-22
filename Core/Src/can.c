@@ -21,7 +21,23 @@
 #include "can.h"
 
 /* USER CODE BEGIN 0 */
+void CAN_ConfigFilter(void)
+{
+    CAN_FilterTypeDef sFilterConfig = {0};
 
+    sFilterConfig.FilterBank           = 0;
+    sFilterConfig.FilterMode           = CAN_FILTERMODE_IDMASK;
+    sFilterConfig.FilterScale          = CAN_FILTERSCALE_32BIT;
+    sFilterConfig.FilterIdHigh         = 0x0000;
+    sFilterConfig.FilterIdLow          = 0x0000;
+    sFilterConfig.FilterMaskIdHigh     = 0x0000;  // accept all
+    sFilterConfig.FilterMaskIdLow      = 0x0000;
+    sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+    sFilterConfig.FilterActivation     = ENABLE;
+
+    HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig);  // must succeed here
+    HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig);  // for CAN2 as well
+}
 /* USER CODE END 0 */
 
 CAN_HandleTypeDef hcan1;
@@ -156,6 +172,13 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     GPIO_InitStruct.Alternate = GPIO_AF9_CAN2;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    /* CAN2 interrupt Init */
+    HAL_NVIC_SetPriority(CAN2_TX_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(CAN2_TX_IRQn);
+    HAL_NVIC_SetPriority(CAN2_RX0_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(CAN2_RX0_IRQn);
+    HAL_NVIC_SetPriority(CAN2_RX1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(CAN2_RX1_IRQn);
   /* USER CODE BEGIN CAN2_MspInit 1 */
 
   /* USER CODE END CAN2_MspInit 1 */
@@ -208,6 +231,10 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
     */
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_12|GPIO_PIN_13);
 
+    /* CAN2 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(CAN2_TX_IRQn);
+    HAL_NVIC_DisableIRQ(CAN2_RX0_IRQn);
+    HAL_NVIC_DisableIRQ(CAN2_RX1_IRQn);
   /* USER CODE BEGIN CAN2_MspDeInit 1 */
 
   /* USER CODE END CAN2_MspDeInit 1 */

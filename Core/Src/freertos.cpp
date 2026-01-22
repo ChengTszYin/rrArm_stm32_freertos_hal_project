@@ -45,13 +45,16 @@ void Receive_Task(void *argument);
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-char ids[MAX_NUM_POINTS] = {0x01, 0x02};
-int reduction[MAX_NUM_POINTS] = {1, 1};
-size_t len = 2;
-Arm robot(ids, reduction, 2);
+char ids[MAX_NUM_POINTS] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+int reduction[MAX_NUM_POINTS] = {25, 25, 25, 25, 25, 25};
+size_t len = 6;
+Arm robot(ids, reduction, 6);
 
 uint8_t receiveBuffer[RECEIVE_BYTES_LENGTH];
 uint8_t receiveAngleBuffer[RECEIVE_BYTES_LENGTH];
+bool needSet = false;
+static CAN_RxHeaderTypeDef rxHeader;
+static uint8_t rxData[8];
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -87,8 +90,8 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	xTaskCreate(Ctrl_Task, "Ctrl_Task", 128, NULL, 2, &Ctrl_Task_Handler);
-	xTaskCreate(Receive_Task, "Receive_Task", 128, NULL, 1, &Receive_Task_Handler);
+	xTaskCreate(Ctrl_Task, "Ctrl_Task", 128, NULL, 1, &Ctrl_Task_Handler);
+	xTaskCreate(Receive_Task, "Receive_Task", 128, NULL, 2, &Receive_Task_Handler);
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -137,9 +140,32 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		robot.updateSetpoints(receiveAngleBuffer);
 
 		float* angle = robot.getStatePoint();
-		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n",
-				angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
+		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
+		needSet = true;
 		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
+	}
+}
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+	if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rxHeader, rxData) == HAL_OK)
+	{
+		LOG("Receive can message.\n");
+		uint8_t id = rxHeader.StdId >> 7;
+		uint8_t cmd = rxHeader.StdId & 0x7F;
+		switch (cmd)
+		{
+			case 0x23:
+			{
+				float pos = *(float*)rxData * 360.0f;
+				robot.updateJointState(id, pos);
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
 	}
 }
 
@@ -158,21 +184,12 @@ void StartDefaultTask(void *argument)
 /* USER CODE BEGIN Application */
 void Ctrl_Task(void *argument)
 {
-	HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	while(1)
 	{
-//		if(xSemaphoreTake(ctrlMutex, pdMS_TO_TICKS(50)) == pdTRUE)
-//		{
-//			robot.printState(180.0f);
-//			vTaskDelay(2000);
-//			robot.printState(0.0f);
-//			vTaskDelay(2000);
-//			xSemaphoreGive(ctrlMutex);
-//			float* angle = robot.getStatePoint();
-//			LOG("receive angle: .3f", angle[0]);
-//			xSemaphoreGive(ctrlMutex);
-//		}
-		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
+		if(needSet != true)
+		{
+
+		}
 	}
 }
 
@@ -181,6 +198,12 @@ void Receive_Task(void *argument)
 	HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	while(1)
 	{
+		if(needSet)
+		{
+			robot.setAngles();
+			needSet = false;
+			LOG("New angle updated\n");
+		}
 		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
 }

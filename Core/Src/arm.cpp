@@ -42,12 +42,33 @@ float* Arm::getStatePoint()
 	return setpoints;
 };
 
+void Arm::updateJointState(char _ids, float _angle)
+{
+	for(int i=0; i < dof; ++i)
+	{
+		if(ids[i] == _ids)
+		{
+			joint_state[i] = _angle;
+		}
+	}
+};
+
+void Arm::setAngles()
+{
+	float angles[6];
+	memcpy(angles, setpoints, 6 * sizeof(float));
+	for(int i=0; i < dof; ++i)
+	{
+		controllers[i]->SetAngle(angles[i]);
+	}
+};
+
 void Arm::printState(uint32_t angle)
 {
 	for(int i=0; i < dof; ++i)
 	{
 		controllers[i]->SetAngle(angle);
 	}
-}
+};
 
 
