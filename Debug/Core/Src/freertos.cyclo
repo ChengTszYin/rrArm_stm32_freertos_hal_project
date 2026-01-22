@@ -1,0 +1,7 @@
+../Core/Src/freertos.cpp:88:6:void MX_FREERTOS_Init()	1
+../Core/Src/freertos.cpp:132:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	2
+../Core/Src/freertos.cpp:146:6:void StartDefaultTask(void*)	1
+../Core/Src/freertos.cpp:159:6:void Ctrl_Task(void*)	1
+../Core/Src/freertos.cpp:179:6:void Receive_Task(void*)	1
+../Core/Src/freertos.cpp:186:1:void __static_initialization_and_destruction_0()	1
+../Core/Src/freertos.cpp:186:1:cpp)	1

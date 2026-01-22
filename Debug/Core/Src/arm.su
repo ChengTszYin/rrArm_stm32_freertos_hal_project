@@ -1,0 +1,5 @@
+../Core/Src/arm.cpp:9:1:Arm::Arm(char*, int*, size_t)	24	static
+../Core/Src/arm.cpp:25:6:void Arm::init()	40	static
+../Core/Src/arm.cpp:35:6:void Arm::updateSetpoints(uint8_t*)	16	static
+../Core/Src/arm.cpp:40:8:float* Arm::getStatePoint()	16	static
+../Core/Src/arm.cpp:45:6:void Arm::printState(uint32_t)	24	static
