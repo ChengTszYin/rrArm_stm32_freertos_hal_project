@@ -48,7 +48,7 @@ void Arm::updateJointState(char _ids, float _angle)
 	{
 		if(ids[i] == _ids)
 		{
-			joint_state[i] = _angle;
+			joint_state[i] = _angle / (float) reduction[i] * 360;
 		}
 	}
 };
@@ -60,15 +60,20 @@ void Arm::setAngles()
 	for(int i=0; i < dof; ++i)
 	{
 		controllers[i]->SetAngle(angles[i]);
+		HAL_Delay(5);
 	}
 };
 
-void Arm::printState(uint32_t angle)
+void Arm::sendToHost()
 {
-	for(int i=0; i < dof; ++i)
-	{
-		controllers[i]->SetAngle(angle);
-	}
+	float* _joint_state = joint_state;
+	HAL_UART_Transmit(&huart1, (uint8_t*)_joint_state, 6 * sizeof(float), HAL_MAX_DELAY);
+};
+
+void Arm::printState()
+{
+//	float* _joint_state = joint_state;
+//	LOG("set joint_state[0..5]: %.3f %.3f\n", joint_state[0], joint_state[1]);
 };
 
 

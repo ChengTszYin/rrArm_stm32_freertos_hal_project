@@ -32,7 +32,8 @@ class Arm
 	float* getStatePoint();
 	void updateJointState(char ids, float _angle);
 	void setAngles();
-	void printState(uint32_t angle);
+	void sendToHost();
+	void printState();
 
 	private:
 	char ids[MAX_NUM_POINTS] = {};
@@ -40,7 +41,7 @@ class Arm
 	size_t dof;
 	Ctrl* controllers[MAX_NUM_POINTS];
 	float setpoints[6];
-	uint32_t joint_state[MAX_NUM_POINTS] = {};
+	float joint_state[MAX_NUM_POINTS] = {};
 };
 
 #endif /* INC_ARM_H_ */

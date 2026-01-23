@@ -4,4 +4,5 @@
 ../Core/Src/arm.cpp:40:8:float* Arm::getStatePoint()	1
 ../Core/Src/arm.cpp:45:6:void Arm::updateJointState(char, float)	3
 ../Core/Src/arm.cpp:56:6:void Arm::setAngles()	2
-../Core/Src/arm.cpp:66:6:void Arm::printState(uint32_t)	2
+../Core/Src/arm.cpp:67:6:void Arm::sendToHost()	1
+../Core/Src/arm.cpp:73:6:void Arm::printState()	1

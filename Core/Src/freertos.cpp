@@ -90,7 +90,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	xTaskCreate(Ctrl_Task, "Ctrl_Task", 128, NULL, 1, &Ctrl_Task_Handler);
+	xTaskCreate(Ctrl_Task, "Ctrl_Task", 128, NULL, 2, &Ctrl_Task_Handler);
 	xTaskCreate(Receive_Task, "Receive_Task", 128, NULL, 2, &Receive_Task_Handler);
   /* USER CODE END Init */
 
@@ -142,9 +142,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		float* angle = robot.getStatePoint();
 		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
 		needSet = true;
-		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
 }
+
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -157,8 +157,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		{
 			case 0x23:
 			{
-				float pos = *(float*)rxData * 360.0f;
+				float pos = *(float*)rxData;
 				robot.updateJointState(id, pos);
+//				robot.printState();
 				break;
 			}
 			default:
@@ -186,10 +187,9 @@ void Ctrl_Task(void *argument)
 {
 	while(1)
 	{
-		if(needSet != true)
-		{
-
-		}
+		LOG("Send to Host\n");
+		robot.sendToHost();
+		vTaskDelay(100);
 	}
 }
 
