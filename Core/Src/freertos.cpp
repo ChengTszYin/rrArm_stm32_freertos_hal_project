@@ -90,8 +90,8 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	xTaskCreate(Ctrl_Task, "Ctrl_Task", 128, NULL, 2, &Ctrl_Task_Handler);
-	xTaskCreate(Receive_Task, "Receive_Task", 128, NULL, 2, &Receive_Task_Handler);
+	xTaskCreate(Ctrl_Task, "Ctrl_Task", 512, NULL, 2, &Ctrl_Task_Handler);
+	xTaskCreate(Receive_Task, "Receive_Task", 512, NULL, 2, &Receive_Task_Handler);
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -140,7 +140,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		robot.updateSetpoints(receiveAngleBuffer);
 
 		float* angle = robot.getStatePoint();
-		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
+//		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
 		needSet = true;
 	}
 }
@@ -187,9 +187,12 @@ void Ctrl_Task(void *argument)
 {
 	while(1)
 	{
-		LOG("Send to Host\n");
-		robot.sendToHost();
-		vTaskDelay(100);
+		if(!needSet)
+		{
+//			LOG("Send to Host\n");
+			robot.getInstantAngle(pdMS_TO_TICKS(100));
+			robot.sendToHost();
+		}
 	}
 }
 
@@ -200,7 +203,7 @@ void Receive_Task(void *argument)
 	{
 		if(needSet)
 		{
-			robot.setAngles();
+			robot.setAngles(pdMS_TO_TICKS(100));
 			needSet = false;
 			LOG("New angle updated\n");
 		}

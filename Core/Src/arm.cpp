@@ -6,6 +6,8 @@
  */
 #include "arm.h"
 
+SemaphoreHandle_t canCommandSemaph = NULL;
+
 Arm::Arm(char* _ids, int* _redunction, size_t len)
 {
 	if(len > MAX_NUM_POINTS || len < 0)
@@ -24,6 +26,13 @@ Arm::Arm(char* _ids, int* _redunction, size_t len)
 
 void Arm::init()
 {
+	BaseType_t xReturn = pdPASS;
+	canCommandSemaph = xSemaphoreCreateBinary();
+	if(canCommandSemaph == NULL)
+	{
+		LOG("Failed to create Semaphore\n");
+	}
+	xSemaphoreGive(canCommandSemaph);
 	for(int i=0; i < dof; ++i)
 	{
 		controllers[i] = new Ctrl(hcan1, ids[i], false, reduction[i], -180, 180);
@@ -53,15 +62,42 @@ void Arm::updateJointState(char _ids, float _angle)
 	}
 };
 
-void Arm::setAngles()
+void Arm::setAngles(TickType_t timeoutTicks)
 {
-	float angles[6];
-	memcpy(angles, setpoints, 6 * sizeof(float));
-	for(int i=0; i < dof; ++i)
+	if(xSemaphoreTake(canCommandSemaph, timeoutTicks) == pdTRUE)
 	{
-		controllers[i]->SetAngle(angles[i]);
-		HAL_Delay(5);
+		float angles[6];
+		memcpy(angles, setpoints, 6 * sizeof(float));
+		for(int i=0; i < dof; ++i)
+		{
+			controllers[i]->SetAngle(angles[i]);
+			vTaskDelay(pdMS_TO_TICKS(10));
+		}
+		xSemaphoreGive(canCommandSemaph);
 	}
+	else
+	{
+		LOG("setAngles timeout - semaphore busy\n");
+	}
+
+};
+
+void Arm::getInstantAngle(TickType_t timeoutTicks)
+{
+	if(xSemaphoreTake(canCommandSemaph, timeoutTicks) == pdTRUE)
+	{
+		for(int i=0; i<dof; ++i)
+		{
+			controllers[i]->RequestPosition();
+			vTaskDelay(pdMS_TO_TICKS(20));
+		}
+		xSemaphoreGive(canCommandSemaph);
+	}
+	else
+	{
+		LOG("getInstantAngle timeout - semaphore busy\n");
+	}
+
 };
 
 void Arm::sendToHost()

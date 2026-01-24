@@ -7,6 +7,9 @@
 
 #ifndef INC_ARM_H_
 #define INC_ARM_H_
+#include "FreeRTOS.h"
+#include "task.h"
+#include <semphr.h>
 #include "ctrl.h"
 #include "usart.h"
 #include "can.h"
@@ -31,7 +34,8 @@ class Arm
 	void updateSetpoints(uint8_t* _setpoint);
 	float* getStatePoint();
 	void updateJointState(char ids, float _angle);
-	void setAngles();
+	void setAngles(TickType_t timeoutTicks);
+	void getInstantAngle(TickType_t timeoutTicks);
 	void sendToHost();
 	void printState();
 
