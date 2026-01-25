@@ -28,6 +28,11 @@ Ctrl::Ctrl(CAN_HandleTypeDef& _hcan, uint8_t _id, bool _inverse,
 	};
 }
 
+Ctrl::~Ctrl()
+{
+
+}
+
 void Ctrl::SetEnable(bool _enable)
 {
 	uint8_t mode = 0x01;
@@ -69,37 +74,51 @@ void Ctrl::SetVelocitySetPoint(float _val)
 
 void Ctrl::SetPositionSetPoint(float _val)
 {
-	uint8_t mode = 0x05;
-	txHeader.StdId = nodeID << 7 | mode;
+    CAN_TxHeaderTypeDef localTxHeader = {
+        .StdId = (uint32_t)nodeID << 7 | 0x05,
+        .ExtId = 0,
+        .IDE   = CAN_ID_STD,
+        .RTR   = CAN_RTR_DATA,
+        .DLC   = 8,
+        .TransmitGlobalTime = DISABLE
+    };
 
-	// Float to Bytes
-	auto* b = (unsigned char*) &_val;
-	for (int i = 0; i < 4; i++)
-		canBuf[i] = *(b + i);
-	canBuf[4] = 1; // Need ACK
+    uint8_t localBuf[8] = {0};
 
-	uint32_t mailbox = 0;
-	HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(&hcan, &txHeader, canBuf, &mailbox);
-	if (status != HAL_OK) {
-		// Simple debug: toggle a LED or send via UART
-		// For now, just break or log
-		LOG("CAN TX ERROR: %d\r\n", status);
-	}
+    // Float to bytes
+    auto* b = (uint8_t*)&_val;
+    for (int i = 0; i < 4; i++) {
+        localBuf[i] = b[i];
+    }
+    localBuf[4] = 1;  // Need ACK
+
+    uint32_t mailbox = 0;
+    HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(&hcan, &localTxHeader, localBuf, &mailbox);
+
+    if (status != HAL_OK) {
+        LOG("SetPos TX failed id=%02X status=%d\n", nodeID, status);
+    }
 }
 
 void Ctrl::RequestPosition()
 {
-	uint8_t mode = 0x23;
-	txHeader.StdId = nodeID << 7 | mode;
-	txHeader.DLC = 0;  // No data
+    CAN_TxHeaderTypeDef localTxHeader = {
+        .StdId = (uint32_t)nodeID << 7 | 0x23,
+        .ExtId = 0,
+        .IDE   = CAN_ID_STD,
+        .RTR   = CAN_RTR_DATA,
+        .DLC   = 0,
+        .TransmitGlobalTime = DISABLE
+    };
 
-	uint32_t mailbox = 0;
-	HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(&hcan, &txHeader, canBuf, &mailbox);
-	if (status != HAL_OK) {
-		// Simple debug: toggle a LED or send via UART
-		// For now, just break or log
-		LOG("CAN TX ERROR: %d\r\n", status);
-	}
+    uint8_t dummy[8] = {0};  // DLC=0 → data ignored
+
+    uint32_t mailbox = 0;
+    HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(&hcan, &localTxHeader, dummy, &mailbox);
+
+    if (status != HAL_OK) {
+        LOG("RequestPos TX failed id=%02X status=%d\n", nodeID, status);
+    }
 }
 
 void Ctrl::SetAngle(float _angle)
@@ -158,31 +177,31 @@ void Ctrl::UpdateAngleCallback(float _pos, bool _isFinished)
 }
 
 
-void Ctrl::HAL_CAN_RxFifo0MsgPendingCallback()
-{
-
-    HAL_StatusTypeDef status = HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &headerRx, data);
-    if (status != HAL_OK)
-    {
-        LOG("cannot receive message\n");
-        return;
-    }
-    else{
-    	LOG("receive message\n");
-    	uint8_t id = headerRx.StdId >> 7;
-    	uint8_t cmd = headerRx.StdId & 0x7F;
-    	 switch (cmd)
-		{
-			case 0x23:
-				UpdateAngleCallback(*(float*) (data), data[4]);
-//				LOG("Angle: %.1f\n", angle);
-				break;
-			default:
-				break;
-		}
-    }
-
-}
+//void Ctrl::HAL_CAN_RxFifo0MsgPendingCallback()
+//{
+//
+//    HAL_StatusTypeDef status = HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &headerRx, data);
+//    if (status != HAL_OK)
+//    {
+//        LOG("cannot receive message\n");
+//        return;
+//    }
+//    else{
+//    	LOG("receive message\n");
+//    	uint8_t id = headerRx.StdId >> 7;
+//    	uint8_t cmd = headerRx.StdId & 0x7F;
+//    	 switch (cmd)
+//		{
+//			case 0x23:
+//				UpdateAngleCallback(*(float*) (data), data[4]);
+////				LOG("Angle: %.1f\n", angle);
+//				break;
+//			default:
+//				break;
+//		}
+//    }
+//
+//}
 
 
 

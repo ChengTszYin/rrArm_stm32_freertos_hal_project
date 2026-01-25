@@ -41,14 +41,24 @@ void Arm::init()
 	state = initSuccess;
 };
 
+//void Arm::updateSetpoints(uint8_t*_setpoint)
+//{
+//	memcpy(setpoints, _setpoint, 6 * sizeof(float));
+//};
+
 void Arm::updateSetpoints(uint8_t*_setpoint)
 {
 	memcpy(setpoints, _setpoint, 6 * sizeof(float));
 };
 
-float* Arm::getStatePoint()
+float* Arm::getSetPoint()
 {
 	return setpoints;
+};
+
+float* Arm::getJointState()
+{
+	return joint_state;
 };
 
 void Arm::updateJointState(char _ids, float _angle)
@@ -57,12 +67,12 @@ void Arm::updateJointState(char _ids, float _angle)
 	{
 		if(ids[i] == _ids)
 		{
-			joint_state[i] = _angle / (float) reduction[i] * 360;
+			joint_state[i] = _angle * (360.0f / (float)reduction[i]);
 		}
 	}
 };
 
-void Arm::setAngles(TickType_t timeoutTicks)
+bool Arm::setAngles(TickType_t timeoutTicks)
 {
 	if(xSemaphoreTake(canCommandSemaph, timeoutTicks) == pdTRUE)
 	{
@@ -70,14 +80,17 @@ void Arm::setAngles(TickType_t timeoutTicks)
 		memcpy(angles, setpoints, 6 * sizeof(float));
 		for(int i=0; i < dof; ++i)
 		{
-			controllers[i]->SetAngle(angles[i]);
-			vTaskDelay(pdMS_TO_TICKS(10));
+			float _setAngle = angles[i];
+			controllers[i]->SetAngle(_setAngle);
+			vTaskDelay(pdMS_TO_TICKS(50));
 		}
 		xSemaphoreGive(canCommandSemaph);
+		return 1;
 	}
 	else
 	{
 		LOG("setAngles timeout - semaphore busy\n");
+		return 0;
 	}
 
 };
@@ -89,7 +102,7 @@ void Arm::getInstantAngle(TickType_t timeoutTicks)
 		for(int i=0; i<dof; ++i)
 		{
 			controllers[i]->RequestPosition();
-			vTaskDelay(pdMS_TO_TICKS(20));
+			vTaskDelay(pdMS_TO_TICKS(100));
 		}
 		xSemaphoreGive(canCommandSemaph);
 	}
@@ -106,10 +119,15 @@ void Arm::sendToHost()
 	HAL_UART_Transmit(&huart1, (uint8_t*)_joint_state, 6 * sizeof(float), HAL_MAX_DELAY);
 };
 
-void Arm::printState()
+float Arm::printState(char _ids)
 {
-//	float* _joint_state = joint_state;
-//	LOG("set joint_state[0..5]: %.3f %.3f\n", joint_state[0], joint_state[1]);
+	for(int i=0; i < dof; ++i)
+	{
+		if(ids[i] == _ids)
+		{
+			return joint_state[i];
+		}
+	}
 };
 
 

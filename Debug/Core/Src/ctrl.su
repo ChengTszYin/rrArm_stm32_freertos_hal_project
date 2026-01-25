@@ -1,10 +1,10 @@
 ../Core/Src/ctrl.cpp:12:1:Ctrl::Ctrl(CAN_HandleTypeDef&, uint8_t, bool, uint8_t, float, float)	32	static
-../Core/Src/ctrl.cpp:31:6:void Ctrl::SetEnable(bool)	40	static
-../Core/Src/ctrl.cpp:51:6:void Ctrl::SetVelocitySetPoint(float)	40	static
-../Core/Src/ctrl.cpp:70:6:void Ctrl::SetPositionSetPoint(float)	40	static
-../Core/Src/ctrl.cpp:90:6:void Ctrl::RequestPosition()	24	static
-../Core/Src/ctrl.cpp:105:6:void Ctrl::SetAngle(float)	24	static
-../Core/Src/ctrl.cpp:113:6:void Ctrl::SetCurrentLimit(float)	40	static
-../Core/Src/ctrl.cpp:133:6:void Ctrl::SetAcceleration(float)	40	static
-../Core/Src/ctrl.cpp:153:6:void Ctrl::UpdateAngleCallback(float, bool)	32	static
-../Core/Src/ctrl.cpp:161:6:void Ctrl::HAL_CAN_RxFifo0MsgPendingCallback()	24	static
+../Core/Src/ctrl.cpp:31:1:Ctrl::~Ctrl()	16	static
+../Core/Src/ctrl.cpp:36:6:void Ctrl::SetEnable(bool)	40	static
+../Core/Src/ctrl.cpp:56:6:void Ctrl::SetVelocitySetPoint(float)	40	static
+../Core/Src/ctrl.cpp:75:6:void Ctrl::SetPositionSetPoint(float)	64	static
+../Core/Src/ctrl.cpp:103:6:void Ctrl::RequestPosition()	56	static
+../Core/Src/ctrl.cpp:124:6:void Ctrl::SetAngle(float)	24	static
+../Core/Src/ctrl.cpp:132:6:void Ctrl::SetCurrentLimit(float)	40	static
+../Core/Src/ctrl.cpp:152:6:void Ctrl::SetAcceleration(float)	40	static
+../Core/Src/ctrl.cpp:172:6:void Ctrl::UpdateAngleCallback(float, bool)	32	static

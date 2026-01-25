@@ -32,19 +32,20 @@ class Arm
 	Arm(char* _ids, int* _redunction, size_t len);
 	void init();
 	void updateSetpoints(uint8_t* _setpoint);
-	float* getStatePoint();
+	float* getSetPoint();
+	float* getJointState();
 	void updateJointState(char ids, float _angle);
-	void setAngles(TickType_t timeoutTicks);
+	bool setAngles(TickType_t timeoutTicks);
 	void getInstantAngle(TickType_t timeoutTicks);
 	void sendToHost();
-	void printState();
+	float printState(char _ids);
 
 	private:
 	char ids[MAX_NUM_POINTS] = {};
 	int reduction[MAX_NUM_POINTS] = {};
 	size_t dof;
 	Ctrl* controllers[MAX_NUM_POINTS];
-	float setpoints[6];
+	float setpoints[MAX_NUM_POINTS] = {};
 	float joint_state[MAX_NUM_POINTS] = {};
 };
 
