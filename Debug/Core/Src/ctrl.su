@@ -1,0 +1,10 @@
+../Core/Src/ctrl.cpp:12:1:Ctrl::Ctrl(CAN_HandleTypeDef&, uint8_t, bool, uint8_t, float, float)	24	static
+../Core/Src/ctrl.cpp:31:1:Ctrl::~Ctrl()	16	static
+../Core/Src/ctrl.cpp:36:6:void Ctrl::SetEnable(bool)	40	static
+../Core/Src/ctrl.cpp:56:6:void Ctrl::SetVelocitySetPoint(float)	56	static
+../Core/Src/ctrl.cpp:79:6:void Ctrl::SetPositionSetPoint(float)	64	static
+../Core/Src/ctrl.cpp:107:6:void Ctrl::RequestPosition()	56	static
+../Core/Src/ctrl.cpp:128:6:void Ctrl::SetAngle(float)	32	static
+../Core/Src/ctrl.cpp:136:6:void Ctrl::SetCurrentLimit(float)	40	static
+../Core/Src/ctrl.cpp:156:6:void Ctrl::SetAcceleration(float)	40	static
+../Core/Src/ctrl.cpp:176:6:void Ctrl::UpdateAngleCallback(float, bool)	32	static
