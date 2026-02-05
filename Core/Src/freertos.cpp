@@ -232,14 +232,14 @@ void Receive_Task(void *argument)
 			while(move != 1);
 			setTraject = false;
 			LOG("New angle updated\n");
-			vTaskDelay(pdMS_TO_TICKS(100));
+//			vTaskDelay(pdMS_TO_TICKS(100));
 		}
 		else
 		{
 			robot.getInstantAngle(pdMS_TO_TICKS(100));
 			robot.sendToHost();
 			float* jointstate = robot.getJointState();
-//			LOG("joint state[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", jointstate[0], jointstate[1], jointstate[2], jointstate[3], jointstate[4], jointstate[5]);
+			LOG("joint state[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", jointstate[0], jointstate[1], jointstate[2], jointstate[3], jointstate[4], jointstate[5]);
 		}
 		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}

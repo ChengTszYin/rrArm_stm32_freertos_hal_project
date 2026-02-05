@@ -1,13 +1,13 @@
 ../Core/Src/arm.cpp:11:1:Arm::Arm(char*, int*, size_t)	24	static
 ../Core/Src/arm.cpp:27:6:void Arm::init()	48	static
-../Core/Src/arm.cpp:49:6:void Arm::updateSetpoints(uint8_t*)	16	static
-../Core/Src/arm.cpp:54:6:void Arm::updateSetVelocity(uint8_t*)	16	static
-../Core/Src/arm.cpp:59:8:float* Arm::getSetPoint()	16	static
-../Core/Src/arm.cpp:64:8:float* Arm::getSetVelocity()	16	static
-../Core/Src/arm.cpp:69:8:float* Arm::getJointState()	16	static
-../Core/Src/arm.cpp:74:6:void Arm::updateJointState(char, float)	32	static
-../Core/Src/arm.cpp:85:6:bool Arm::setAngles(TickType_t)	56	static
-../Core/Src/arm.cpp:110:6:void Arm::getInstantAngle(TickType_t)	24	static
-../Core/Src/arm.cpp:128:6:void Arm::finishSegment()	16	static
-../Core/Src/arm.cpp:133:6:void Arm::sendToHost()	24	static
-../Core/Src/arm.cpp:139:7:float Arm::printState(char)	24	static
+../Core/Src/arm.cpp:51:6:void Arm::updateSetpoints(uint8_t*)	16	static
+../Core/Src/arm.cpp:56:6:void Arm::updateSetVelocity(uint8_t*)	16	static
+../Core/Src/arm.cpp:61:8:float* Arm::getSetPoint()	16	static
+../Core/Src/arm.cpp:66:8:float* Arm::getSetVelocity()	16	static
+../Core/Src/arm.cpp:71:8:float* Arm::getJointState()	16	static
+../Core/Src/arm.cpp:76:6:void Arm::updateJointState(char, float)	32	static
+../Core/Src/arm.cpp:87:6:bool Arm::setAngles(TickType_t)	56	static
+../Core/Src/arm.cpp:112:6:void Arm::getInstantAngle(TickType_t)	24	static
+../Core/Src/arm.cpp:130:6:void Arm::finishSegment()	16	static
+../Core/Src/arm.cpp:135:6:void Arm::sendToHost()	24	static
+../Core/Src/arm.cpp:141:7:float Arm::printState(char)	24	static

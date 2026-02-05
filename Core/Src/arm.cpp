@@ -37,6 +37,8 @@ void Arm::init()
 	{
 		controllers[i] = new Ctrl(hcan, ids[i], false, reduction[i], -180, 180);
 		controllers[i] -> SetEnable(true);
+		controllers[i]->SetVelocitySetPoint(0.0f);
+		vTaskDelay(pdMS_TO_TICKS(50));
 	}
 	state = initSuccess;
 };
@@ -94,7 +96,7 @@ bool Arm::setAngles(TickType_t timeoutTicks)
 			float _setAngle = angles[i];
 			controllers[i] -> SetVelocitySetPoint(_setVelocity);
 			controllers[i] -> SetAngle(_setAngle);
-//			vTaskDelay(pdMS_TO_TICKS(20));
+			vTaskDelay(pdMS_TO_TICKS(5));
 		}
 		xSemaphoreGive(canCommandSemaph);
 		return 1;
@@ -114,7 +116,7 @@ void Arm::getInstantAngle(TickType_t timeoutTicks)
 		for(int i=0; i<dof; ++i)
 		{
 			controllers[i]->RequestPosition();
-			vTaskDelay(pdMS_TO_TICKS(10));
+			vTaskDelay(pdMS_TO_TICKS(5));
 		}
 		xSemaphoreGive(canCommandSemaph);
 	}
