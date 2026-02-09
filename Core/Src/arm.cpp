@@ -37,7 +37,7 @@ void Arm::init()
 	{
 		controllers[i] = new Ctrl(hcan, ids[i], false, reduction[i], -180, 180);
 		controllers[i] -> SetEnable(true);
-		controllers[i]->SetVelocitySetPoint(0.0f);
+//		controllers[i]->SetVelocitySetPoint(0.0f);
 		vTaskDelay(pdMS_TO_TICKS(50));
 	}
 	state = initSuccess;
@@ -94,7 +94,7 @@ bool Arm::setAngles(TickType_t timeoutTicks)
 		{
 			float _setVelocity = setvelocity[i];
 			float _setAngle = angles[i];
-			controllers[i] -> SetVelocitySetPoint(_setVelocity);
+//			controllers[i] -> SetVelocitySetPoint(_setVelocity);
 			controllers[i] -> SetAngle(_setAngle);
 			vTaskDelay(pdMS_TO_TICKS(5));
 		}
@@ -127,14 +127,20 @@ void Arm::getInstantAngle(TickType_t timeoutTicks)
 
 };
 
+
 void Arm::finishSegment()
 {
-
+	uint8_t ack = 'D';
+	HAL_UART_Transmit(&huart1, &ack, sizeof(uint8_t), HAL_MAX_DELAY);
 };
 
 void Arm::sendToHost()
 {
 	float* _joint_state = joint_state;
+//	for(int i=0; i < dof; ++i)
+//	{
+//		_joint_state[i] = _joint_state[i] * 3.14159 / 180.0;
+//	}
 	HAL_UART_Transmit(&huart1, (uint8_t*)_joint_state, 6 * sizeof(float), HAL_MAX_DELAY);
 };
 

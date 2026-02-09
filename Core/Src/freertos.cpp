@@ -35,7 +35,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define RECEIVE_BYTES_LENGTH 48
+#define RECEIVE_BYTES_LENGTH 50
+#define STEP 2
 #define RECEIVE_ANGLE_LENGTH 24
 #define RECEIVE_VELOCITY_LENGTH 24
 
@@ -49,7 +50,7 @@ void Receive_Task(void *argument);
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 char ids[MAX_NUM_POINTS] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
-int reduction[MAX_NUM_POINTS] = {15, 15, 15, 15, 15, 15};
+int reduction[MAX_NUM_POINTS] = {50, 1, 1, 51, 51, 1};
 size_t len = 6;
 Arm robot(ids, reduction, 6);
 
@@ -155,16 +156,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart == &huart1)
 	{
-		memcpy(receiveAngleBuffer, receiveBuffer, 24 * sizeof(uint8_t));
-		memcpy(receiveFloatBuffer, (receiveBuffer + RECEIVE_ANGLE_LENGTH), 24 * sizeof(uint8_t));
+		short step = (int16_t)receiveBuffer[1] << 8 | receiveBuffer[0];
+		memcpy(receiveAngleBuffer, receiveBuffer + STEP, 24 * sizeof(uint8_t));
+		memcpy(receiveFloatBuffer, (receiveBuffer + STEP + RECEIVE_ANGLE_LENGTH), 24 * sizeof(uint8_t));
 		robot.updateSetpoints(receiveAngleBuffer);
 		robot.updateSetVelocity(receiveFloatBuffer);
 		float* angle = robot.getSetPoint();
 		float* velocity = robot.getSetVelocity();
-//		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
-//		LOG("receive velocity[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", velocity[0], velocity[1], velocity[2], velocity[3], velocity[4], velocity[5]);
-		setTraject = true;
-
+		LOG("receive id: %d\n", step);
+		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
+		LOG("receive velocity[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", velocity[0], velocity[1], velocity[2], velocity[3], velocity[4], velocity[5]);
+		if(step == 0)
+		{
+			setTraject = false;
+		}
+		else
+		{
+			setTraject = true;
+		}
 	}
 	HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 }
@@ -230,9 +239,10 @@ void Receive_Task(void *argument)
 				move = robot.setAngles(pdMS_TO_TICKS(100));
 			}
 			while(move != 1);
+			robot.finishSegment();
+			LOG("Segment finished\n");
 			setTraject = false;
 			LOG("New angle updated\n");
-//			vTaskDelay(pdMS_TO_TICKS(100));
 		}
 		else
 		{
@@ -243,7 +253,6 @@ void Receive_Task(void *argument)
 		}
 		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
-
 }
 /* USER CODE END Application */
 

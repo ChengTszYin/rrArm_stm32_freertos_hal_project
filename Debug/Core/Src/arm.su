@@ -8,6 +8,6 @@
 ../Core/Src/arm.cpp:76:6:void Arm::updateJointState(char, float)	32	static
 ../Core/Src/arm.cpp:87:6:bool Arm::setAngles(TickType_t)	56	static
 ../Core/Src/arm.cpp:112:6:void Arm::getInstantAngle(TickType_t)	24	static
-../Core/Src/arm.cpp:130:6:void Arm::finishSegment()	16	static
-../Core/Src/arm.cpp:135:6:void Arm::sendToHost()	24	static
-../Core/Src/arm.cpp:141:7:float Arm::printState(char)	24	static
+../Core/Src/arm.cpp:131:6:void Arm::finishSegment()	24	static
+../Core/Src/arm.cpp:137:6:void Arm::sendToHost()	24	static
+../Core/Src/arm.cpp:147:7:float Arm::printState(char)	24	static
