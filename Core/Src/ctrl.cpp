@@ -181,31 +181,6 @@ void Ctrl::UpdateAngleCallback(float _pos, bool _isFinished)
 }
 
 
-//void Ctrl::HAL_CAN_RxFifo0MsgPendingCallback()
-//{
-//
-//    HAL_StatusTypeDef status = HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &headerRx, data);
-//    if (status != HAL_OK)
-//    {
-//        LOG("cannot receive message\n");
-//        return;
-//    }
-//    else{
-//    	LOG("receive message\n");
-//    	uint8_t id = headerRx.StdId >> 7;
-//    	uint8_t cmd = headerRx.StdId & 0x7F;
-//    	 switch (cmd)
-//		{
-//			case 0x23:
-//				UpdateAngleCallback(*(float*) (data), data[4]);
-////				LOG("Angle: %.1f\n", angle);
-//				break;
-//			default:
-//				break;
-//		}
-//    }
-//
-//}
 
 
 
