@@ -50,8 +50,9 @@ void Receive_Task(void *argument);
 /* USER CODE BEGIN PD */
 char ids[MAX_NUM_POINTS] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
 int reduction[MAX_NUM_POINTS] = {50, 51, 51, 51, 51, 51};
+bool inverse_[MAX_NUM_POINTS] = {1,1,1,1,1,1};
 size_t len = 6;
-Arm robot(ids, reduction, 6);
+Arm robot(ids, reduction, inverse_, 6);
 
 uint8_t receiveBuffer[RECEIVE_BYTES_LENGTH];
 uint8_t receiveAngleBuffer[RECEIVE_ANGLE_LENGTH];
@@ -169,8 +170,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		{
 			angle[i] *= degree_to_radian;
 		}
-		LOG("receive id: %d\n", step);
-		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
+//		LOG("receive id: %d\n", step);
+//		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
 //		LOG("receive velocity[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", velocity[0], velocity[1], velocity[2], velocity[3], velocity[4], velocity[5]);
 		if(step == 0)
 		{
@@ -257,7 +258,7 @@ void Receive_Task(void *argument)
 //			float* jointstate = robot.getJointState();
 //			LOG("joint state[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", jointstate[0], jointstate[1], jointstate[2], jointstate[3], jointstate[4], jointstate[5]);
 		}
-		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
+//		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
 }
 /* USER CODE END Application */

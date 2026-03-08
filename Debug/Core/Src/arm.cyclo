@@ -1,13 +1,13 @@
-../Core/Src/arm.cpp:11:1:Arm::Arm(char*, int*, size_t)	4
-../Core/Src/arm.cpp:27:6:void Arm::init()	3
-../Core/Src/arm.cpp:51:6:void Arm::updateSetpoints(uint8_t*)	1
-../Core/Src/arm.cpp:56:6:void Arm::updateSetVelocity(uint8_t*)	1
-../Core/Src/arm.cpp:61:8:float* Arm::getSetPoint()	1
-../Core/Src/arm.cpp:66:8:float* Arm::getSetVelocity()	1
-../Core/Src/arm.cpp:71:8:float* Arm::getJointState()	1
-../Core/Src/arm.cpp:76:6:void Arm::updateJointState(char, float)	3
-../Core/Src/arm.cpp:87:6:bool Arm::setAngles(TickType_t)	3
-../Core/Src/arm.cpp:112:6:void Arm::getInstantAngle(TickType_t)	3
-../Core/Src/arm.cpp:131:6:void Arm::finishSegment()	1
-../Core/Src/arm.cpp:137:6:void Arm::sendToHost()	1
-../Core/Src/arm.cpp:147:7:float Arm::printState(char)	2
+../Core/Src/arm.cpp:11:1:Arm::Arm(char*, int*, bool*, size_t)	5
+../Core/Src/arm.cpp:28:6:void Arm::init()	3
+../Core/Src/arm.cpp:52:6:void Arm::updateSetpoints(uint8_t*)	1
+../Core/Src/arm.cpp:57:6:void Arm::updateSetVelocity(uint8_t*)	1
+../Core/Src/arm.cpp:62:8:float* Arm::getSetPoint()	1
+../Core/Src/arm.cpp:67:8:float* Arm::getSetVelocity()	1
+../Core/Src/arm.cpp:72:8:float* Arm::getJointState()	1
+../Core/Src/arm.cpp:77:6:void Arm::updateJointState(char, float)	3
+../Core/Src/arm.cpp:88:6:bool Arm::setAngles(TickType_t)	3
+../Core/Src/arm.cpp:113:6:void Arm::getInstantAngle(TickType_t)	3
+../Core/Src/arm.cpp:132:6:void Arm::finishSegment()	1
+../Core/Src/arm.cpp:138:6:void Arm::sendToHost()	1
+../Core/Src/arm.cpp:148:7:float Arm::printState(char)	2

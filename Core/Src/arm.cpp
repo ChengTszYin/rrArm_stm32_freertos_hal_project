@@ -8,18 +8,19 @@
 
 SemaphoreHandle_t canCommandSemaph = NULL;
 
-Arm::Arm(char* _ids, int* _redunction, size_t len)
+Arm::Arm(char* _ids, int* _redunction, bool* inverse_, size_t len)
 {
 	if(len > MAX_NUM_POINTS || len < 0)
 	{
 		state = constructError;
 	};
-	if(_ids == nullptr || _redunction == nullptr)
+	if(_ids == nullptr || _redunction == nullptr || inverse_ == nullptr)
 	{
 		state = constructError;
 	};
 	memcpy(ids, _ids, len * sizeof(char));
 	memcpy(reduction, _redunction, len * sizeof(int));
+	memcpy(inverse, inverse_, len * sizeof(int));
 	dof = len;
 	state = setupSuccess;
 };
@@ -35,7 +36,7 @@ void Arm::init()
 	xSemaphoreGive(canCommandSemaph);
 	for(int i=0; i < dof; ++i)
 	{
-		controllers[i] = new Ctrl(hcan, ids[i], false, reduction[i], -180, 180);
+		controllers[i] = new Ctrl(hcan, ids[i], inverse[i], reduction[i], -180, 180);
 		controllers[i] -> SetEnable(true);
 //		controllers[i]->SetVelocitySetPoint(0.0f);
 		vTaskDelay(pdMS_TO_TICKS(50));

@@ -29,7 +29,7 @@ class Arm
 {
 	public:
 	enum RobotState state;
-	Arm(char* _ids, int* _redunction, size_t len);
+	Arm(char* _ids, int* _redunction, bool* inverse, size_t len);
 	void init();
 	void updateSetpoints(uint8_t* _setpoint);
 	void updateSetVelocity(uint8_t*_setpoint);
@@ -46,6 +46,7 @@ class Arm
 	private:
 	char ids[MAX_NUM_POINTS] = {};
 	int reduction[MAX_NUM_POINTS] = {};
+	bool inverse[MAX_NUM_POINTS] = {};
 	size_t dof;
 	Ctrl* controllers[MAX_NUM_POINTS];
 	float setpoints[MAX_NUM_POINTS] = {};
