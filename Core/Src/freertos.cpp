@@ -35,7 +35,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define RECEIVE_BYTES_LENGTH 50
+#define RECEIVE_BYTES_LENGTH 51
 #define STEP 2
 #define RECEIVE_ANGLE_LENGTH 24
 #define RECEIVE_VELOCITY_LENGTH 24
@@ -159,30 +159,34 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart == &huart1)
 	{
-		short step = (int16_t)receiveBuffer[1] << 8 | receiveBuffer[0];
-		memcpy(receiveAngleBuffer, receiveBuffer + STEP, 24 * sizeof(uint8_t));
-		memcpy(receiveFloatBuffer, (receiveBuffer + STEP + RECEIVE_ANGLE_LENGTH), 24 * sizeof(uint8_t));
-		robot.updateSetpoints(receiveAngleBuffer);
-		robot.updateSetVelocity(receiveFloatBuffer);
-		float* angle = robot.getSetPoint();
-		float* velocity = robot.getSetVelocity();
-		for(int i; i < 6; ++i)
+		uint8_t crc = robot.checksum(receiveBuffer, RECEIVE_BYTES_LENGTH);
+		if(crc == receiveBuffer[50])
 		{
-			angle[i] *= degree_to_radian;
+			short step = (int16_t)receiveBuffer[1] << 8 | receiveBuffer[0];
+			memcpy(receiveAngleBuffer, receiveBuffer + STEP, 24 * sizeof(uint8_t));
+			memcpy(receiveFloatBuffer, (receiveBuffer + STEP + RECEIVE_ANGLE_LENGTH), 24 * sizeof(uint8_t));
+			robot.updateSetpoints(receiveAngleBuffer);
+			robot.updateSetVelocity(receiveFloatBuffer);
+			float* angle = robot.getSetPoint();
+			float* velocity = robot.getSetVelocity();
+			for(int i = 0; i < 6; ++i)
+			{
+				angle[i] *= degree_to_radian;
+			}
+	//		LOG("receive id: %d\n", step);
+	//		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
+	//		LOG("receive velocity[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", velocity[0], velocity[1], velocity[2], velocity[3], velocity[4], velocity[5]);
+			if(step == 0)
+			{
+				setTraject = false;
+			}
+			else
+			{
+				setTraject = true;
+			}
 		}
-//		LOG("receive id: %d\n", step);
-//		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
-//		LOG("receive velocity[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", velocity[0], velocity[1], velocity[2], velocity[3], velocity[4], velocity[5]);
-		if(step == 0)
-		{
-			setTraject = false;
-		}
-		else
-		{
-			setTraject = true;
-		}
+		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
-	HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
@@ -258,6 +262,7 @@ void Receive_Task(void *argument)
 //			float* jointstate = robot.getJointState();
 //			LOG("joint state[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", jointstate[0], jointstate[1], jointstate[2], jointstate[3], jointstate[4], jointstate[5]);
 		}
+		vTaskDelay(pdMS_TO_TICKS(5));
 //		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
 }

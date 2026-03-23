@@ -10,4 +10,5 @@
 ../Core/Src/arm.cpp:113:6:void Arm::getInstantAngle(TickType_t)	3
 ../Core/Src/arm.cpp:132:6:void Arm::finishSegment()	1
 ../Core/Src/arm.cpp:138:6:void Arm::sendToHost()	1
-../Core/Src/arm.cpp:148:7:float Arm::printState(char)	2
+../Core/Src/arm.cpp:152:9:uint8_t Arm::checksum(uint8_t*, uint8_t)	2
+../Core/Src/arm.cpp:160:7:float Arm::printState(char)	2

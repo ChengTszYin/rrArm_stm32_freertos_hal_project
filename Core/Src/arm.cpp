@@ -51,12 +51,12 @@ void Arm::init()
 
 void Arm::updateSetpoints(uint8_t*_setpoint)
 {
-	memcpy(setpoints, _setpoint, 6 * sizeof(float));
+	memcpy(setpoints, _setpoint, dof * sizeof(float));
 };
 
 void Arm::updateSetVelocity(uint8_t*_setpoint)
 {
-	memcpy(setvelocity, _setpoint, 6 * sizeof(float));
+	memcpy(setvelocity, _setpoint, dof * sizeof(float));
 };
 
 float* Arm::getSetPoint()
@@ -142,8 +142,20 @@ void Arm::sendToHost()
 //	{
 //		_joint_state[i] = _joint_state[i] * 3.14159 / 180.0;
 //	}
-	HAL_UART_Transmit(&huart1, (uint8_t*)_joint_state, 6 * sizeof(float), HAL_MAX_DELAY);
+	uint8_t send_byte[25];		//Define the message size of host message
+	memcpy(send_byte, _joint_state, MAX_NUM_POINTS * sizeof(float));
+	uint8_t crc = checksum(send_byte, MAX_NUM_POINTS);
+	send_byte[24] = crc;
+	HAL_UART_Transmit(&huart1, send_byte, 25, HAL_MAX_DELAY);
 };
+
+uint8_t Arm::checksum(uint8_t* data, uint8_t len) {
+    uint8_t crc = 0;
+    for (uint8_t i = 0; i < len - 1; ++i) {
+       crc += data[i];
+    }
+    return crc;
+}
 
 float Arm::printState(char _ids)
 {
