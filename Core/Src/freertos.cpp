@@ -159,7 +159,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart == &huart1)
 	{
-		uint8_t crc = robot.checksum(receiveBuffer, RECEIVE_BYTES_LENGTH);
+		uint8_t crc = robot.checksum(receiveBuffer, RECEIVE_BYTES_LENGTH-1);
 		if(crc == receiveBuffer[50])
 		{
 			short step = (int16_t)receiveBuffer[1] << 8 | receiveBuffer[0];
@@ -173,8 +173,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			{
 				angle[i] *= degree_to_radian;
 			}
-	//		LOG("receive id: %d\n", step);
-	//		LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
+//			LOG("receive id: %d\n", step);
+//			LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
 	//		LOG("receive velocity[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", velocity[0], velocity[1], velocity[2], velocity[3], velocity[4], velocity[5]);
 			if(step == 0)
 			{
@@ -185,8 +185,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				setTraject = true;
 			}
 		}
-		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
+	HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
@@ -194,10 +194,8 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     if (huart == &huart1)
     {
         LOG("UART Error: 0x%08lX\n", huart->ErrorCode);
-
         // Clear error flags
         __HAL_UART_FLUSH_DRREGISTER(huart);
-
         // Restart DMA
         HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
     }
@@ -250,8 +248,7 @@ void Receive_Task(void *argument)
 				move = robot.setAngles(pdMS_TO_TICKS(100));
 			}
 			while(move != 1);
-			robot.finishSegment();
-			LOG("Segment finished\n");
+//			LOG("Segment finished\n");
 			setTraject = false;
 			LOG("New angle updated\n");
 		}
@@ -262,7 +259,7 @@ void Receive_Task(void *argument)
 //			float* jointstate = robot.getJointState();
 //			LOG("joint state[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", jointstate[0], jointstate[1], jointstate[2], jointstate[3], jointstate[4], jointstate[5]);
 		}
-		vTaskDelay(pdMS_TO_TICKS(5));
+		vTaskDelay(pdMS_TO_TICKS(1));
 //		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
 }

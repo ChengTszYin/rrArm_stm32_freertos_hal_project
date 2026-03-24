@@ -39,7 +39,6 @@ class Arm
 	void updateJointState(char ids, float _angle);
 	bool setAngles(TickType_t timeoutTicks);
 	void getInstantAngle(TickType_t timeoutTicks);
-	void finishSegment();
 	void sendToHost();
 	uint8_t checksum(uint8_t* data, uint8_t len);
 	float printState(char _ids);

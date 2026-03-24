@@ -129,12 +129,6 @@ void Arm::getInstantAngle(TickType_t timeoutTicks)
 };
 
 
-void Arm::finishSegment()
-{
-	uint8_t ack = 'D';
-	HAL_UART_Transmit(&huart1, &ack, sizeof(uint8_t), HAL_MAX_DELAY);
-};
-
 void Arm::sendToHost()
 {
 	float* _joint_state = joint_state;
@@ -142,16 +136,16 @@ void Arm::sendToHost()
 //	{
 //		_joint_state[i] = _joint_state[i] * 3.14159 / 180.0;
 //	}
-	uint8_t send_byte[25];		//Define the message size of host message
-	memcpy(send_byte, _joint_state, MAX_NUM_POINTS * sizeof(float));
-	uint8_t crc = checksum(send_byte, MAX_NUM_POINTS);
+	uint8_t send_byte[25] = {0};		//Define the message size of host message
+	memcpy(send_byte, _joint_state, 24);
+	uint8_t crc = checksum(send_byte, 24);
 	send_byte[24] = crc;
 	HAL_UART_Transmit(&huart1, send_byte, 25, HAL_MAX_DELAY);
 };
 
 uint8_t Arm::checksum(uint8_t* data, uint8_t len) {
     uint8_t crc = 0;
-    for (uint8_t i = 0; i < len - 1; ++i) {
+    for (uint8_t i = 0; i < len; ++i) {
        crc += data[i];
     }
     return crc;
