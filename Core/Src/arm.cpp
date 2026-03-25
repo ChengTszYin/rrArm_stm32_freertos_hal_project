@@ -8,7 +8,7 @@
 
 SemaphoreHandle_t canCommandSemaph = NULL;
 
-Arm::Arm(char* _ids, int* _redunction, bool* inverse_, size_t len)
+Arm::Arm(char* _ids, int* _redunction, int* inverse_, size_t len)
 {
 	if(len > MAX_NUM_POINTS || len < 0)
 	{
@@ -38,7 +38,6 @@ void Arm::init()
 	{
 		controllers[i] = new Ctrl(hcan, ids[i], inverse[i], reduction[i], -180, 180);
 		controllers[i] -> SetEnable(true);
-//		controllers[i]->SetVelocitySetPoint(0.0f);
 		vTaskDelay(pdMS_TO_TICKS(50));
 	}
 	state = initSuccess;
@@ -80,7 +79,8 @@ void Arm::updateJointState(char _ids, float _angle)
 	{
 		if(ids[i] == _ids)
 		{
-			joint_state[i] = _angle * (360.0f / (float)reduction[i]);
+			joint_state[i] = _angle * (360.0f / (float)reduction[i]) * inverse[i];
+//			LOG("UPDATE %i joint_state: %.3f\n", i, joint_state[i]);
 		}
 	}
 };
@@ -145,7 +145,7 @@ void Arm::sendToHost()
 
 uint8_t Arm::checksum(uint8_t* data, uint8_t len) {
     uint8_t crc = 0;
-    for (uint8_t i = 0; i < len; ++i) {
+    for (uint8_t i = 0; i < len - 1; ++i) {
        crc += data[i];
     }
     return crc;

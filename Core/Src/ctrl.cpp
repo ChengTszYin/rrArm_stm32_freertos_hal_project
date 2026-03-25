@@ -76,6 +76,7 @@ void Ctrl::SetVelocitySetPoint(float _val)
 	    LOG("CAN TX ERROR: %d\r\n", status);
 	}
 }
+
 void Ctrl::SetPositionSetPoint(float _val)
 {
     CAN_TxHeaderTypeDef localTxHeader = {
@@ -88,19 +89,16 @@ void Ctrl::SetPositionSetPoint(float _val)
     };
 
     uint8_t localBuf[8] = {0};
-
-    // Float to bytes
-    auto* b = (uint8_t*)&_val;
-    for (int i = 0; i < 4; i++) {
-        localBuf[i] = b[i];
-    }
-    localBuf[4] = 1;  // Need ACK
+    memcpy(localBuf, &_val, sizeof(float));   // bytes 0-3 = position
+    // localBuf[4..7] remain 0
 
     uint32_t mailbox = 0;
     HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(&hcan, &localTxHeader, localBuf, &mailbox);
 
     if (status != HAL_OK) {
         LOG("SetPos TX failed id=%02X status=%d\n", nodeID, status);
+    } else {
+        LOG("SetPos TX OK  ID=0x%03X  val=%.1f\n", localTxHeader.StdId, _val);
     }
 }
 

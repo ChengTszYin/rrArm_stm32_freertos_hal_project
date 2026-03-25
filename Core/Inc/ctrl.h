@@ -11,6 +11,7 @@
 #include "can.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <cstring>
 
 class Ctrl {
 public:

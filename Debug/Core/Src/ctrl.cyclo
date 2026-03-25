@@ -2,9 +2,9 @@
 ../Core/Src/ctrl.cpp:31:1:Ctrl::~Ctrl()	1
 ../Core/Src/ctrl.cpp:36:6:void Ctrl::SetEnable(bool)	4
 ../Core/Src/ctrl.cpp:56:6:void Ctrl::SetVelocitySetPoint(float)	3
-../Core/Src/ctrl.cpp:79:6:void Ctrl::SetPositionSetPoint(float)	3
-../Core/Src/ctrl.cpp:107:6:void Ctrl::RequestPosition()	2
-../Core/Src/ctrl.cpp:128:6:void Ctrl::SetAngle(float)	2
-../Core/Src/ctrl.cpp:136:6:void Ctrl::SetCurrentLimit(float)	3
-../Core/Src/ctrl.cpp:156:6:void Ctrl::SetAcceleration(float)	3
-../Core/Src/ctrl.cpp:176:6:void Ctrl::UpdateAngleCallback(float, bool)	2
+../Core/Src/ctrl.cpp:80:6:void Ctrl::SetPositionSetPoint(float)	2
+../Core/Src/ctrl.cpp:105:6:void Ctrl::RequestPosition()	2
+../Core/Src/ctrl.cpp:126:6:void Ctrl::SetAngle(float)	2
+../Core/Src/ctrl.cpp:134:6:void Ctrl::SetCurrentLimit(float)	3
+../Core/Src/ctrl.cpp:154:6:void Ctrl::SetAcceleration(float)	3
+../Core/Src/ctrl.cpp:174:6:void Ctrl::UpdateAngleCallback(float, bool)	2
