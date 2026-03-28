@@ -97,8 +97,6 @@ void Ctrl::SetPositionSetPoint(float _val)
 
     if (status != HAL_OK) {
         LOG("SetPos TX failed id=%02X status=%d\n", nodeID, status);
-    } else {
-        LOG("SetPos TX OK  ID=0x%03X  val=%.1f\n", localTxHeader.StdId, _val);
     }
 }
 

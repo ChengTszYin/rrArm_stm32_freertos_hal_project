@@ -30,7 +30,6 @@
 #include "arm.h"
 #include "usart.h"
 #include "can.h"
-#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -155,8 +154,11 @@ void StartDefaultTask(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+extern void MX_USART1_UART_Init(void);
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+	LOG("receive callback\n");
 	if (huart == &huart1)
 	{
 		uint8_t crc = robot.checksum(receiveBuffer, RECEIVE_BYTES_LENGTH);
@@ -173,9 +175,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			{
 				angle[i] *= degree_to_radian;
 			}
-			LOG("receive id: %d\n", step);
-			LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
-	//		LOG("receive velocity[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", velocity[0], velocity[1], velocity[2], velocity[3], velocity[4], velocity[5]);
+//			LOG("receive id: %d\n", step);
+//			LOG("receive angle[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", angle[0], angle[1], angle[2], angle[3], angle[4], angle[5]);
+//			LOG("receive velocity[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", velocity[0], velocity[1], velocity[2], velocity[3], velocity[4], velocity[5]);
 			if(step == 0)
 			{
 				setTraject = false;
@@ -185,19 +187,52 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				setTraject = true;
 			}
 		}
+		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
-	HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
     if (huart == &huart1)
     {
-        LOG("UART Error: 0x%08lX\n", huart->ErrorCode);
-        // Clear error flags
-        __HAL_UART_FLUSH_DRREGISTER(huart);
-        // Restart DMA
-        HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
+        uint32_t error = HAL_UART_GetError(huart);
+
+        // Log the error (limited to avoid flooding)
+        static uint32_t err_count = 0;
+        if (err_count < 10)
+        {
+            LOG("UART Error on F1: 0x%08lX (FE=%d, NE=%d, ORE=%d, PE=%d)\r\n",
+                error,
+                !!(error & HAL_UART_ERROR_FE),
+                !!(error & HAL_UART_ERROR_NE),
+                !!(error & HAL_UART_ERROR_ORE),
+                !!(error & HAL_UART_ERROR_PE));
+            err_count++;
+        }
+
+        // === Aggressive recovery specifically for STM32F1 ===
+        HAL_UART_DMAStop(huart);     // Stop DMA first
+
+        // Clear all error flags
+        __HAL_UART_CLEAR_FEFLAG(huart);
+        __HAL_UART_CLEAR_NEFLAG(huart);
+        __HAL_UART_CLEAR_OREFLAG(huart);
+        __HAL_UART_CLEAR_PEFLAG(huart);
+
+        // Dummy read to clear status register
+        volatile uint32_t tmp = huart->Instance->SR;
+        tmp = huart->Instance->DR;
+
+        huart->ErrorCode = HAL_UART_ERROR_NONE;
+
+        // Re-initialize the entire UART peripheral (this fixes most stubborn F1 cases)
+        MX_USART1_UART_Init();
+
+        // Restart DMA reception
+        HAL_UART_Receive_DMA(huart, receiveBuffer, sizeof(receiveBuffer));
+
+        // Reset trajectory flag
+        setTraject = false;
     }
 }
 
@@ -240,25 +275,20 @@ void Receive_Task(void *argument)
 	HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	while(1)
 	{
+		robot.getInstantAngle(pdMS_TO_TICKS(30));
+		robot.sendToHost();
+//		float* jointstate = robot.getJointState();
+//		LOG("joint state[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", jointstate[0], jointstate[1], jointstate[2], jointstate[3], jointstate[4], jointstate[5]);
 		if(setTraject)
 		{
-			bool move;
-			do
+			bool finished = robot.setAngles(pdMS_TO_TICKS(30));
+			if(finished)
 			{
-				move = robot.setAngles(pdMS_TO_TICKS(100));
+				setTraject = false;
+				LOG("Segment finished successfully\n");
 			}
-			while(move != 1);
-			setTraject = false;
-			LOG("New angle updated\n");
 		}
-		else
-		{
-			robot.getInstantAngle(pdMS_TO_TICKS(100));
-			robot.sendToHost();
-//			float* jointstate = robot.getJointState();
-//			LOG("joint state[0..5]: %.3f %.3f  %.3f  %.3f  %.3f  %.3f\n", jointstate[0], jointstate[1], jointstate[2], jointstate[3], jointstate[4], jointstate[5]);
-		}
-		vTaskDelay(pdMS_TO_TICKS(1));
+		vTaskDelay(pdMS_TO_TICKS(30));
 //		HAL_UART_Receive_DMA(&huart1, receiveBuffer, sizeof(receiveBuffer));
 	}
 }

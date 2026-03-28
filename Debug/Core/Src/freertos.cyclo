@@ -1,9 +1,9 @@
-../Core/Src/freertos.cpp:102:6:void MX_FREERTOS_Init()	1
-../Core/Src/freertos.cpp:145:6:void StartDefaultTask(void*)	1
-../Core/Src/freertos.cpp:158:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	5
-../Core/Src/freertos.cpp:192:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	2
-../Core/Src/freertos.cpp:205:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	3
-../Core/Src/freertos.cpp:228:6:void Ctrl_Task(void*)	2
-../Core/Src/freertos.cpp:238:6:void Receive_Task(void*)	3
-../Core/Src/freertos.cpp:264:1:void __static_initialization_and_destruction_0()	1
-../Core/Src/freertos.cpp:264:1:cpp)	1
+../Core/Src/freertos.cpp:101:6:void MX_FREERTOS_Init()	1
+../Core/Src/freertos.cpp:144:6:void StartDefaultTask(void*)	1
+../Core/Src/freertos.cpp:159:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	5
+../Core/Src/freertos.cpp:194:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	3
+../Core/Src/freertos.cpp:240:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	3
+../Core/Src/freertos.cpp:263:6:void Ctrl_Task(void*)	2
+../Core/Src/freertos.cpp:273:6:void Receive_Task(void*)	3
+../Core/Src/freertos.cpp:294:1:void __static_initialization_and_destruction_0()	1
+../Core/Src/freertos.cpp:294:1:cpp)	1

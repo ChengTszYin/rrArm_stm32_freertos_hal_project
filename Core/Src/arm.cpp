@@ -97,7 +97,7 @@ bool Arm::setAngles(TickType_t timeoutTicks)
 			float _setAngle = angles[i];
 //			controllers[i] -> SetVelocitySetPoint(_setVelocity);
 			controllers[i] -> SetAngle(_setAngle);
-			vTaskDelay(pdMS_TO_TICKS(5));
+//			vTaskDelay(pdMS_TO_TICKS(5));
 		}
 		xSemaphoreGive(canCommandSemaph);
 		return 1;
@@ -140,7 +140,8 @@ void Arm::sendToHost()
 	memcpy(send_byte, _joint_state, 24);
 	uint8_t crc = checksum(send_byte, 24);
 	send_byte[24] = crc;
-	HAL_UART_Transmit(&huart1, send_byte, 25, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart1, send_byte, 25, 50);
+	HAL_Delay(3);
 };
 
 uint8_t Arm::checksum(uint8_t* data, uint8_t len) {

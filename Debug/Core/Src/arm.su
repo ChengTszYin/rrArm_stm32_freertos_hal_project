@@ -9,5 +9,5 @@
 ../Core/Src/arm.cpp:88:6:bool Arm::setAngles(TickType_t)	56	static
 ../Core/Src/arm.cpp:113:6:void Arm::getInstantAngle(TickType_t)	24	static
 ../Core/Src/arm.cpp:132:6:void Arm::sendToHost()	48	static
-../Core/Src/arm.cpp:146:9:uint8_t Arm::checksum(uint8_t*, uint8_t)	32	static
-../Core/Src/arm.cpp:154:7:float Arm::printState(char)	24	static
+../Core/Src/arm.cpp:147:9:uint8_t Arm::checksum(uint8_t*, uint8_t)	32	static
+../Core/Src/arm.cpp:155:7:float Arm::printState(char)	24	static
