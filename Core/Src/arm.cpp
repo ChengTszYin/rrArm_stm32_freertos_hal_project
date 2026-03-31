@@ -80,7 +80,7 @@ void Arm::updateJointState(char _ids, float _angle)
 	{
 		if(ids[i] == _ids)
 		{
-			joint_state[i] = _angle * (360.0f / (float)reduction[i]) * inverse[i] + joint_offset[i];
+			joint_state[i] = _angle * (360.0f / (float)reduction[i]) * inverse[i] - joint_offset[i];
 //			LOG("UPDATE %i joint_state: %.3f\n", i, joint_state[i]);
 		}
 	}

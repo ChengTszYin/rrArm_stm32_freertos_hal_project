@@ -1677,7 +1677,7 @@ void Arm::updateJointState(char _ids, float _angle)
  80012a8:	429a      	cmp	r2, r3
  80012aa:	d132      	bne.n	8001312 <_ZN3Arm16updateJointStateEcf+0x8a>
 		{
-			joint_state[i] = _angle * (360.0f / (float)reduction[i]) * inverse[i] + joint_offset[i];
+			joint_state[i] = _angle * (360.0f / (float)reduction[i]) * inverse[i] - joint_offset[i];
  80012ac:	68fb      	ldr	r3, [r7, #12]
  80012ae:	697a      	ldr	r2, [r7, #20]
  80012b0:	3202      	adds	r2, #2
@@ -1711,7 +1711,7 @@ void Arm::updateJointState(char _ids, float _angle)
  80012f6:	320e      	adds	r2, #14
  80012f8:	f853 3022 	ldr.w	r3, [r3, r2, lsl #2]
  80012fc:	4619      	mov	r1, r3
- 80012fe:	f7ff fc39 	bl	8000b74 <__addsf3>
+ 80012fe:	f7ff fc37 	bl	8000b70 <__aeabi_fsub>
  8001302:	4603      	mov	r3, r0
  8001304:	4619      	mov	r1, r3
  8001306:	68fa      	ldr	r2, [r7, #12]
