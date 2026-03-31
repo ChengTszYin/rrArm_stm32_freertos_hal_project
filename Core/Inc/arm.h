@@ -29,7 +29,7 @@ class Arm
 {
 	public:
 	enum RobotState state;
-	Arm(char* _ids, int* _redunction, int* inverse, size_t len);
+	Arm(char* _ids, int* _redunction, int* inverse, float* joint_offset_, size_t len);
 	void init();
 	void updateSetpoints(uint8_t* _setpoint);
 	void updateSetVelocity(uint8_t*_setpoint);
@@ -40,13 +40,14 @@ class Arm
 	bool setAngles(TickType_t timeoutTicks);
 	void getInstantAngle(TickType_t timeoutTicks);
 	void sendToHost();
-	uint8_t checksum(uint8_t* data, uint8_t len);
+	uint8_t checksum(uint8_t* data, size_t len);
 	float printState(char _ids);
 
 	private:
 	char ids[MAX_NUM_POINTS] = {};
 	int reduction[MAX_NUM_POINTS] = {};
 	int inverse[MAX_NUM_POINTS] = {};
+	float joint_offset[MAX_NUM_POINTS] = {};
 	size_t dof;
 	Ctrl* controllers[MAX_NUM_POINTS];
 	float setpoints[MAX_NUM_POINTS] = {};

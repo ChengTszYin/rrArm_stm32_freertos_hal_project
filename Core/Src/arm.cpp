@@ -8,19 +8,20 @@
 
 SemaphoreHandle_t canCommandSemaph = NULL;
 
-Arm::Arm(char* _ids, int* _redunction, int* inverse_, size_t len)
+Arm::Arm(char* _ids, int* _redunction, int* inverse_, float* joint_offset_, size_t len)
 {
 	if(len > MAX_NUM_POINTS || len < 0)
 	{
 		state = constructError;
 	};
-	if(_ids == nullptr || _redunction == nullptr || inverse_ == nullptr)
+	if(_ids == nullptr || _redunction == nullptr || inverse_ == nullptr || joint_offset == nullptr)
 	{
 		state = constructError;
 	};
 	memcpy(ids, _ids, len * sizeof(char));
 	memcpy(reduction, _redunction, len * sizeof(int));
 	memcpy(inverse, inverse_, len * sizeof(int));
+	memcpy(joint_offset, joint_offset_, len * sizeof(float));
 	dof = len;
 	state = setupSuccess;
 };
@@ -79,7 +80,7 @@ void Arm::updateJointState(char _ids, float _angle)
 	{
 		if(ids[i] == _ids)
 		{
-			joint_state[i] = _angle * (360.0f / (float)reduction[i]) * inverse[i];
+			joint_state[i] = _angle * (360.0f / (float)reduction[i]) * inverse[i] + joint_offset[i];
 //			LOG("UPDATE %i joint_state: %.3f\n", i, joint_state[i]);
 		}
 	}
@@ -94,10 +95,10 @@ bool Arm::setAngles(TickType_t timeoutTicks)
 		for(int i=0; i < dof; ++i)
 		{
 			float _setVelocity = setvelocity[i];
-			float _setAngle = angles[i];
+			float _setAngle = angles[i] + joint_offset[i];
 //			controllers[i] -> SetVelocitySetPoint(_setVelocity);
 			controllers[i] -> SetAngle(_setAngle);
-//			vTaskDelay(pdMS_TO_TICKS(5));
+			vTaskDelay(pdMS_TO_TICKS(1));
 		}
 		xSemaphoreGive(canCommandSemaph);
 		return 1;
@@ -144,9 +145,9 @@ void Arm::sendToHost()
 	HAL_Delay(3);
 };
 
-uint8_t Arm::checksum(uint8_t* data, uint8_t len) {
+uint8_t Arm::checksum(uint8_t* data, size_t len) {
     uint8_t crc = 0;
-    for (uint8_t i = 0; i < len - 1; ++i) {
+    for (uint8_t i = 0; i < len-1; ++i) {
        crc += data[i];
     }
     return crc;
