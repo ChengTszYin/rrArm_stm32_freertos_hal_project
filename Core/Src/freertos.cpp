@@ -50,7 +50,7 @@ void Receive_Task(void *argument);
 char ids[MAX_NUM_POINTS] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
 int reduction[MAX_NUM_POINTS] = {50, 51, 51, 51, 51, 51};
 int inverse_[MAX_NUM_POINTS] = {-1, -1, -1, -1, -1, -1};
-float joint_offset[MAX_NUM_POINTS] = {-20.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+float joint_offset[MAX_NUM_POINTS] = {-18.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 size_t len = 6;
 Arm robot(ids, reduction, inverse_, joint_offset, 6);
 
@@ -159,10 +159,9 @@ extern void MX_USART1_UART_Init(void);
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-//	LOG("receive callback\n");
 	if (huart == &huart1)
 	{
-		uint8_t crc = robot.checksum(receiveBuffer, RECEIVE_BYTES_LENGTH);
+		uint8_t crc = robot.checksum(receiveBuffer, RECEIVE_BYTES_LENGTH - 1);
 		if(crc == receiveBuffer[50])
 		{
 			short step = (int16_t)receiveBuffer[1] << 8 | receiveBuffer[0];
@@ -250,7 +249,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			{
 				float pos = *(float*)rxData;
 				robot.updateJointState(id, pos);
-//				LOG(" CAN RX: ID=%02u  Pos=%.3f deg\n", (unsigned)id, pos);
 				break;
 			}
 			default:

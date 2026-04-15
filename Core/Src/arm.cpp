@@ -44,11 +44,6 @@ void Arm::init()
 	state = initSuccess;
 };
 
-//void Arm::updateSetpoints(uint8_t*_setpoint)
-//{
-//	memcpy(setpoints, _setpoint, 6 * sizeof(float));
-//};
-
 void Arm::updateSetpoints(uint8_t*_setpoint)
 {
 	memcpy(setpoints, _setpoint, dof * sizeof(float));
@@ -95,7 +90,7 @@ bool Arm::setAngles(TickType_t timeoutTicks)
 		for(int i=0; i < dof; ++i)
 		{
 			float _setVelocity = setvelocity[i];
-			float _setAngle = angles[i] + joint_offset[i];
+			float _setAngle = (angles[i] + joint_offset[i]);
 //			controllers[i] -> SetVelocitySetPoint(_setVelocity);
 			controllers[i] -> SetAngle(_setAngle);
 			vTaskDelay(pdMS_TO_TICKS(1));
@@ -141,13 +136,13 @@ void Arm::sendToHost()
 	memcpy(send_byte, _joint_state, 24);
 	uint8_t crc = checksum(send_byte, 24);
 	send_byte[24] = crc;
-	HAL_UART_Transmit(&huart1, send_byte, 25, 50);
-	HAL_Delay(3);
+	HAL_UART_Transmit(&huart1, send_byte, 25, HAL_MAX_DELAY);
+//	HAL_Delay(3);
 };
 
 uint8_t Arm::checksum(uint8_t* data, size_t len) {
     uint8_t crc = 0;
-    for (uint8_t i = 0; i < len-1; ++i) {
+    for (uint8_t i = 0; i < len; ++i) {
        crc += data[i];
     }
     return crc;
