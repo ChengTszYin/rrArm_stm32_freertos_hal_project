@@ -49,7 +49,7 @@ void Receive_Task(void *argument);
 /* USER CODE BEGIN PD */
 char ids[MAX_NUM_POINTS] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
 int reduction[MAX_NUM_POINTS] = {50, 51, 51, 51, 51, 51};
-int inverse_[MAX_NUM_POINTS] = {-1, -1, -1, -1, -1, -1};
+int inverse_[MAX_NUM_POINTS] = {-1,-1, -1, -1, +1, +1};
 float joint_offset[MAX_NUM_POINTS] = {-18.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 size_t len = 6;
 Arm robot(ids, reduction, inverse_, joint_offset, 6);

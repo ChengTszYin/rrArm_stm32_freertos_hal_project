@@ -6,8 +6,8 @@
 ../Core/Src/arm.cpp:62:8:float* Arm::getSetVelocity()	16	static
 ../Core/Src/arm.cpp:67:8:float* Arm::getJointState()	16	static
 ../Core/Src/arm.cpp:72:6:void Arm::updateJointState(char, float)	40	static
-../Core/Src/arm.cpp:84:6:bool Arm::setAngles(TickType_t)	56	static
-../Core/Src/arm.cpp:109:6:void Arm::getInstantAngle(TickType_t)	24	static
-../Core/Src/arm.cpp:128:6:void Arm::sendToHost()	48	static
-../Core/Src/arm.cpp:143:9:uint8_t Arm::checksum(uint8_t*, size_t)	32	static
-../Core/Src/arm.cpp:151:7:float Arm::printState(char)	24	static
+../Core/Src/arm.cpp:84:6:bool Arm::setAngles(TickType_t)	64	static
+../Core/Src/arm.cpp:110:6:void Arm::getInstantAngle(TickType_t)	24	static
+../Core/Src/arm.cpp:129:6:void Arm::sendToHost()	48	static
+../Core/Src/arm.cpp:144:9:uint8_t Arm::checksum(uint8_t*, size_t)	32	static
+../Core/Src/arm.cpp:152:7:float Arm::printState(char)	24	static

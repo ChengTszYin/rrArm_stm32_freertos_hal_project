@@ -90,7 +90,8 @@ bool Arm::setAngles(TickType_t timeoutTicks)
 		for(int i=0; i < dof; ++i)
 		{
 			float _setVelocity = setvelocity[i];
-			float _setAngle = (angles[i] + joint_offset[i]);
+			int _inverse =  inverse[i] > 0 ? -1 : 1;
+			float _setAngle = angles[i] * _inverse + joint_offset[i];
 //			controllers[i] -> SetVelocitySetPoint(_setVelocity);
 			controllers[i] -> SetAngle(_setAngle);
 			vTaskDelay(pdMS_TO_TICKS(1));
